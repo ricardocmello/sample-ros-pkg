@@ -1,0 +1,7 @@
+<launch>
+
+	<node pkg="rostopic" type="rostopic" name="sub_char" args="echo /test_char" output="screen"/>
+
+	<node pkg="rostopic" type="rostopic" name="sub_twist" args="echo /test_twist" output="screen"/>
+
+</launch>

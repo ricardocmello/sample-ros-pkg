@@ -1,0 +1,8 @@
+<launch>
+
+	<node pkg="rostopic" type="rostopic" name="pub_char" args="pub -r 1 /test_char std_msgs/Char 'data: 5' " output="screen"/>
+
+	<node pkg="rostopic" type="rostopic" name="pub_twist" 
+		args="pub -r 5 /test_twist geometry_msgs/Twist '{linear: {x: 1.0, y: 2.0, z: 3.0}, angular: {x: 4.0, y: 5.0, z: 6.0}}' " output="screen"/>
+
+</launch>
