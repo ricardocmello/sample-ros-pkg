@@ -24,7 +24,7 @@ class TurtleControl():
         self.main()
 
     def init_parameters(self):
-        self.debug = False
+        self.debug = True
 
         self.pose_topic = self.rospy.get_param("~pose_topic", "/turtle1/pose")
         self.twist_topic = self.rospy.get_param("~twist_topic", "/turtle1/cmd_vel")
@@ -67,7 +67,6 @@ class TurtleControl():
             debug_pose.header.frame_id = "odom"
             debug_pose.pose.position.x = self.current_pose.x
             debug_pose.pose.position.y = self.current_pose.y
-            debug_pose.pose.orientation.z = self.current_pose.theta
             self.pub_debug_pose.publish(debug_pose)
         return
 
