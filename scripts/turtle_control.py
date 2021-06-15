@@ -6,7 +6,7 @@ from geometry_msgs.msg import PoseStamped
 from turtlesim.msg import Pose as TurtlePose
 from std_msgs.msg import Float32
 
-from math import cos, pi, sin, tanh, radians
+from math import cos, pi, sin, tanh, radians, sqrt
 
 class TurtleControl():
     def __init__(self):
@@ -89,7 +89,7 @@ class TurtleControl():
         self.error_x = self.trajectory_x - self.current_pose.x
         self.error_y = self.trajectory_y - self.current_pose.y
         error = Float32()
-        error.data = math.sqrt(self.error_x**2+self.error_y**2)
+        error.data = sqrt(self.error_x**2+self.error_y**2)
         self.pub_debug_error.publish(error)
         return 
 
