@@ -4,6 +4,7 @@ import rospy
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import PoseStamped
 from turtlesim.msg import Pose as TurtlePose
+from std_msgs.msg import Float32
 
 from math import cos, pi, sin, tanh, radians
 
@@ -47,9 +48,10 @@ class TurtleControl():
 
     def initPublishers(self):
         self.pub_goal = self.rospy.Publisher(self.twist_topic, Twist, queue_size = 5)
-        if self.debug:
-            self.pub_debug_trajectory = self.rospy.Publisher("debug_trajectory", PoseStamped, queue_size = 5)
-            self.pub_debug_pose = self.rospy.Publisher("debug_pose", PoseStamped, queue_size = 5)
+        #if self.debug:
+        self.pub_debug_trajectory = self.rospy.Publisher("debug_trajectory", PoseStamped, queue_size = 5)
+        self.pub_debug_pose = self.rospy.Publisher("debug_pose", PoseStamped, queue_size = 5)
+        self.pub_debug_error = self.rospy.Publisher("debug_error", Float32, queue_size = 5)
         return
 
     def init_variables(self):
@@ -61,31 +63,34 @@ class TurtleControl():
     def pose_callback(self, msg):
         self.current_pose = msg
         self.pose_count += 1
-        if self.debug:
-            debug_pose = PoseStamped()
-            debug_pose.header.stamp = rospy.Time.now()
-            debug_pose.header.frame_id = "odom"
-            debug_pose.pose.position.x = self.current_pose.x
-            debug_pose.pose.position.y = self.current_pose.y
-            self.pub_debug_pose.publish(debug_pose)
+        #if self.debug:
+        debug_pose = PoseStamped()
+        debug_pose.header.stamp = rospy.Time.now()
+        debug_pose.header.frame_id = "odom"
+        debug_pose.pose.position.x = self.current_pose.x
+        debug_pose.pose.position.y = self.current_pose.y
+        self.pub_debug_pose.publish(debug_pose)
         return
 
     def get_current_goal(self, t):
         # Considering a leminiscate trajectory
         self.trajectory_x = 5.54 + (-2 * cos(2 * pi* t / self.period) / (sin(2 * pi * t / self.period) ** 2 + 1))
         self.trajectory_y = 5.54 + (-2 * sin(2 * pi* t / self.period) * cos(2 * pi* t / self.period) / (sin(2 * pi * t / self.period) ** 2 + 1))
-        if self.debug:
-            debug_traj = PoseStamped()
-            debug_traj.header.stamp = rospy.Time.now()
-            debug_traj.header.frame_id = "goal"
-            debug_traj.pose.position.x = self.trajectory_x
-            debug_traj.pose.position.y = self.trajectory_y
-            self.pub_debug_trajectory.publish(debug_traj)
+        #if self.debug:
+        debug_traj = PoseStamped()
+        debug_traj.header.stamp = rospy.Time.now()
+        debug_traj.header.frame_id = "goal"
+        debug_traj.pose.position.x = self.trajectory_x
+        debug_traj.pose.position.y = self.trajectory_y
+        self.pub_debug_trajectory.publish(debug_traj)
         return 
 
     def calculate_position_error(self):
         self.error_x = self.trajectory_x - self.current_pose.x
         self.error_y = self.trajectory_y - self.current_pose.y
+        error = Float32()
+        error.data = math.sqrt(self.error_x**2+self.error_y**2)
+        self.pub_debug_error.publish(error)
         return 
 
     def controller(self):
